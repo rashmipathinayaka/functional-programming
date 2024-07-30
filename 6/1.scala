@@ -1,27 +1,31 @@
 object shop extends App{
 
-case class product(name:String,quantity:Int,price:Int)
-val inventory1:Map[Int,product]=Map(
-    1->product("apple",20,50),
-    2->product("milk",20,10),
-    3->product("suger",20,10)
+///case class product(name:String,quantity:Int,price:Double)
+var inventory1: Map[Int , ( String , Int , Double)] = Map(
+
+    1->("rice",20,50),
+    2->("milk",20,10),
+    3->("pen",20,10)
 )
-val inventory2:Map[Int,product]=Map(
-    1->product("rice",20,50),
-    2->product("dhal",20,10),
-    3->product("pen",20,10)
+var inventory2: Map[Int , ( String , Int , Double)] = Map(
+
+    1->("rice",20,50),
+    2->("dhal",20,10),
+    3->("pen",20,10)
 )
 
-for ((productId, product) <- inventory1) {
-      println(s"Product ID: $productId, Name: ${product.name}")
-}
+ for((id , (product , quantity , price)) <- inventory1){
+            println(s"$id\t$product\t\t$quantity\t\t$price")
+ }
 
  println("total value: ");
- var sum=0;
-  for ((productId, product) <- inventory1) {
-     sum=sum+product.quantity*product.price;
+ var sum:Double=0.0;
+    for((id , (product , quantity , price)) <- inventory1){
+            sum += quantity * price
+
   }
     println("rs."+sum)
+
 
 println("check if inventory 1 is empty: ");
 if(inventory1.isEmpty){
@@ -31,28 +35,38 @@ if(inventory1.isEmpty){
 }
 
 
-var mergedInventory: Map[Int, Product] = inventory1
+//def mergeInventories(inventory1: Map[Int, (String, Int, Double)], inventory2: Map[Int, (String, Int, Double)]): Map[Int, (String, Int, Double)] = {
+    var mergedInventory = scala.collection.mutable.Map[Int , (String , Int , Double)]()
+    mergedInventory ++= inventory1
 
-    for ((productId, product) <- inventory2) {
-    if (mergedInventory.contains(productId)) {
-      val currentProduct = mergedInventory(productId)
-      val updatedProduct = Product(
-        currentProduct.name,
-        currentProduct.quantity + product.quantity,
-        Math.max(currentProduct.price, product.price)
-      )
-      mergedInventory += (productId -> updatedProduct)
-    } else {
-      mergedInventory += (productId -> product)
+    for ((id, (product, quantity, price)) <- inventory2) {
+      if (mergedInventory.contains(id)) {
+        val (existingProduct, existingQuantity, existingPrice) = mergedInventory(id)
+        mergedInventory(id) = (product, quantity + existingQuantity, Math.max(price, existingPrice))
+      } else {
+        mergedInventory(id) = (product, quantity, price)
+      }
     }
-  }
 
-  // Print merged inventory
-  println("Merged Inventory:")
-  for ((productId, product) <- mergedInventory) {
-    println(s"Product ID: $productId, Name: ${product.name}, Quantity: ${product.quantity}, Price: ${product.price}")
+    mergedInventory.toMap
+  println("after merging: ");
+
+   for((id , (product , quantity , price)) <- mergedInventory){
+            println(s"$id\t$product\t\t$quantity\t\t$price")
+ }
+
+  
+println("Details of product with ID = 2 in inventory1:")
+  inventory1.get(2) match {
+    case Some((product, quantity, price)) => println(s"2\t$product\t\t$quantity\t\t$price")
+    case None => println("Product with ID 2 not found in inventory1")
   }
 }
+
+
+
+
+
 
 
 
